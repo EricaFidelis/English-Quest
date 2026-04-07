@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Quest | Erica Franco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top, #1e1b4b, #0f172a, #020617);
+            min-height: 100vh; color: white; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; padding: 20px; overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover { background: rgba(255, 255, 255, 0.15); transform: scale(1.02); }
+
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .animate-shake { animation: shake 0.2s ease-in-out 2; }
+
+        /* Bandeira do Reino Unido Estilizada */
+        .uk-flag {
+            width: 40px; height: 25px; background: #00247d; position: relative;
+            overflow: hidden; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2);
+        }
+        .uk-flag::before, .uk-flag::after {
+            content: ""; position: absolute; background: white;
+        }
+        .uk-flag::before { width: 100%; height: 6px; top: 9px; }
+        .uk-flag::after { width: 6px; height: 100%; left: 17px; }
+        .uk-red-cross {
+            position: absolute; background: #cf142b; z-index: 1;
+        }
+        .uk-v { width: 100%; height: 2px; top: 11px; }
+        .uk-h { width: 2px; height: 100%; left: 19px; }
+
+        .linkedin-btn {
+            position: fixed; bottom: 20px; right: 20px; z-index: 100;
+            display: flex; align-items: center; gap: 10px; padding: 10px 16px;
+            border-radius: 12px; background: #0077b5; color: white;
+            font-weight: 600; font-size: 13px; transition: all 0.3s ease; text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="w-full max-w-3xl glass-panel rounded-3xl p-6 mb-8 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <div class="uk-flag">
+                <div class="uk-red-cross uk-v"></div>
+                <div class="uk-red-cross uk-h"></div>
+            </div>
+            <h1 class="text-xl font-extrabold tracking-tight uppercase">ENGLISH<span class="text-red-500">QUEST</span></h1>
+        </div>
+        
+        <div class="flex gap-12">
+            <div class="text-center">
+                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Score</p>
+                <p id="score" class="text-2xl font-black text-yellow-400">0</p>
+            </div>
+            <div class="text-center">
+                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Best</p>
+                <p id="highscore" class="text-2xl font-black text-blue-400">0</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-6 text-center">
+        <p class="text-[10px] text-gray-500 uppercase font-bold tracking-[0.3em] mb-3">Select Your Mission</p>
+        <select id="nicheSelect" onchange="initGame()" class="bg-slate-800/80 border border-white/10 text-white px-6 py-2 rounded-full text-sm font-bold outline-none cursor-pointer">
+            <option value="all">🌐 All Words</option>
+            <option value="Comida">🍔 Food</option>
+            <option value="Objeto">📦 Objects</option>
+            <option value="Animal">🐶 Animals</option>
+            <option value="Escola">🏫 School</option>
+            <option value="Trabalho">💼 Work</option>
+        </select>
+    </div>
+
+    <main id="gameCard" class="glass-panel w-full max-w-lg rounded-[2.5rem] p-12 flex flex-col items-center relative transition-all duration-300">
+        <div id="categoryLabel" class="bg-white/10 text-gray-300 text-[10px] font-black uppercase px-4 py-1 rounded-full mb-8 tracking-widest">CATEGORY</div>
+        
+        <div id="targetWord" class="text-7xl font-black mb-16 text-center tracking-tight">...</div>
+
+        <div class="w-full h-1 bg-white/5 rounded-full mb-12 overflow-hidden">
+            <div id="timerBar" class="h-full bg-red-500 transition-all duration-100 ease-linear" style="width: 100%"></div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 w-full">
+            <button onclick="handleChoice(0)" id="opt0" class="option-btn py-6 rounded-2xl text-xl font-bold">...</button>
+            <button onclick="handleChoice(1)" id="opt1" class="option-btn py-6 rounded-2xl text-xl font-bold">...</button>
+        </div>
+
+        <div id="livesContainer" class="mt-8 flex gap-3 opacity-80">
+            <span id="heart1">❤️</span><span id="heart2">❤️</span><span id="heart3">❤️</span>
+        </div>
+    </main>
+
+    <a href="https://www.linkedin.com/in/ericafrancofidelis/" target="_blank" class="linkedin-btn">
+        <i data-lucide="linkedin" class="w-4 h-4"></i>
+        <span>Erica Franco</span>
+    </a>
+
+    <div id="gameOverModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[110] hidden flex items-center justify-center p-6">
+        <div class="glass-panel max-w-sm w-full rounded-[2rem] p-10 text-center">
+            <h2 class="text-3xl font-black mb-6 italic">GAME OVER</h2>
+            <div class="bg-white/5 rounded-2xl p-6 mb-8">
+                <p id="finalScore" class="text-5xl font-black text-yellow-400">0</p>
+                <p class="text-xs text-gray-400 uppercase">XP Score</p>
+            </div>
+            <button onclick="resetGame()" class="w-full bg-white text-slate-950 py-4 rounded-xl font-bold uppercase">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const allWords = [
+            // FOOD (50)
+            {eng: "Apple", pt: "maçã", cat: "Comida"}, {eng: "Bread", pt: "pão", cat: "Comida"}, {eng: "Rice", pt: "arroz", cat: "Comida"}, {eng: "Beans", pt: "feijão", cat: "Comida"}, {eng: "Chicken", pt: "frango", cat: "Comida"}, {eng: "Beef", pt: "carne bovina", cat: "Comida"}, {eng: "Fish", pt: "peixe", cat: "Comida"}, {eng: "Milk", pt: "leite", cat: "Comida"}, {eng: "Egg", pt: "ovo", cat: "Comida"}, {eng: "Cheese", pt: "queijo", cat: "Comida"}, {eng: "Butter", pt: "manteiga", cat: "Comida"}, {eng: "Pasta", pt: "macarrão", cat: "Comida"}, {eng: "Pizza", pt: "pizza", cat: "Comida"}, {eng: "Sandwich", pt: "sanduíche", cat: "Comida"}, {eng: "Salad", pt: "salada", cat: "Comida"}, {eng: "Soup", pt: "sopa", cat: "Comida"}, {eng: "Cake", pt: "bolo", cat: "Comida"}, {eng: "Cookie", pt: "biscoito", cat: "Comida"}, {eng: "Chocolate", pt: "chocolate", cat: "Comida"}, {eng: "Ice cream", pt: "sorvete", cat: "Comida"}, {eng: "Banana", pt: "banana", cat: "Comida"}, {eng: "Orange", pt: "laranja", cat: "Comida"}, {eng: "Strawberry", pt: "morango", cat: "Comida"}, {eng: "Grape", pt: "uva", cat: "Comida"}, {eng: "Carrot", pt: "cenoura", cat: "Comida"}, {eng: "Potato", pt: "batata", cat: "Comida"}, {eng: "Tomato", pt: "tomate", cat: "Comida"}, {eng: "Onion", pt: "cebola", cat: "Comida"}, {eng: "Garlic", pt: "alho", cat: "Comida"}, {eng: "Lettuce", pt: "alface", cat: "Comida"}, {eng: "Cucumber", pt: "pepino", cat: "Comida"}, {eng: "Pepper", pt: "pimentão/pimenta", cat: "Comida"}, {eng: "Corn", pt: "milho", cat: "Comida"}, {eng: "Yogurt", pt: "iogurte", cat: "Comida"}, {eng: "Honey", pt: "mel", cat: "Comida"}, {eng: "Vinegar", pt: "vinagre", cat: "Comida"}, {eng: "Mustard", pt: "mostarda", cat: "Comida"}, {eng: "Mayonnaise", pt: "maionese", cat: "Comida"}, {eng: "Ketchup", pt: "ketchup", cat: "Comida"}, {eng: "Soy sauce", pt: "molho de soja", cat: "Comida"}, {eng: "Zucchini", pt: "abobrinha", cat: "Comida"}, {eng: "Eggplant", pt: "berinjela", cat: "Comida"}, {eng: "Asparagus", pt: "aspargo", cat: "Comida"}, {eng: "Quinoa", pt: "quinoa", cat: "Comida"}, {eng: "Lentils", pt: "lentilha", cat: "Comida"}, {eng: "Chickpeas", pt: "grão-de-bico", cat: "Comida"}, {eng: "Turmeric", pt: "cúrcuma", cat: "Comida"}, {eng: "Cinnamon", pt: "canela", cat: "Comida"}, {eng: "Salmon", pt: "salmão", cat: "Comida"}, {eng: "Shrimp", pt: "camarão", cat: "Comida"},
+            // OBJECTS (50)
+            {eng: "Table", pt: "mesa", cat: "Objeto"}, {eng: "Chair", pt: "cadeira", cat: "Objeto"}, {eng: "Bed", pt: "cama", cat: "Objeto"}, {eng: "Sofa", pt: "sofá", cat: "Objeto"}, {eng: "Lamp", pt: "lâmpada", cat: "Objeto"}, {eng: "Phone", pt: "telefone", cat: "Objeto"}, {eng: "Computer", pt: "computador", cat: "Objeto"}, {eng: "Keyboard", pt: "teclado", cat: "Objeto"}, {eng: "Mouse", pt: "mouse", cat: "Objeto"}, {eng: "Book", pt: "livro", cat: "Objeto"}, {eng: "Pen", pt: "caneta", cat: "Objeto"}, {eng: "Pencil", pt: "lápis", cat: "Objeto"}, {eng: "Notebook", pt: "caderno", cat: "Objeto"}, {eng: "Bag", pt: "bolsa", cat: "Objeto"}, {eng: "Bottle", pt: "garrafa", cat: "Objeto"}, {eng: "Cup", pt: "copo/xícara", cat: "Objeto"}, {eng: "Plate", pt: "prato", cat: "Objeto"}, {eng: "Fork", pt: "garfo", cat: "Objeto"}, {eng: "Knife", pt: "faca", cat: "Objeto"}, {eng: "Spoon", pt: "colher", cat: "Objeto"}, {eng: "Clock", pt: "relógio", cat: "Objeto"}, {eng: "Mirror", pt: "espelho", cat: "Objeto"}, {eng: "Door", pt: "porta", cat: "Objeto"}, {eng: "Window", pt: "janela", cat: "Objeto"}, {eng: "Key", pt: "chave", cat: "Objeto"}, {eng: "Wallet", pt: "carteira", cat: "Objeto"}, {eng: "Camera", pt: "câmera", cat: "Objeto"}, {eng: "Television", pt: "televisão", cat: "Objeto"}, {eng: "Remote", pt: "controle remoto", cat: "Objeto"}, {eng: "Fan", pt: "ventilador", cat: "Objeto"}, {eng: "Printer", pt: "impressora", cat: "Objeto"}, {eng: "Charger", pt: "carregador", cat: "Objeto"}, {eng: "Cable", pt: "cabo", cat: "Objeto"}, {eng: "Scissors", pt: "tesoura", cat: "Objeto"}, {eng: "Glue", pt: "cola", cat: "Objeto"}, {eng: "Tape", pt: "fita", cat: "Objeto"}, {eng: "Brush", pt: "escova/pincel", cat: "Objeto"}, {eng: "Towel", pt: "toalha", cat: "Objeto"}, {eng: "Blanket", pt: "cobertor", cat: "Objeto"}, {eng: "Pillow", pt: "travesseiro", cat: "Objeto"}, {eng: "Clipboard", pt: "prancheta", cat: "Objeto"}, {eng: "Projector", pt: "projetor", cat: "Objeto"}, {eng: "Headphones", pt: "fones de ouvido", cat: "Objeto"}, {eng: "Microphone", pt: "microfone", cat: "Objeto"}, {eng: "Router", pt: "roteador", cat: "Objeto"}, {eng: "Toolbox", pt: "caixa de ferramentas", cat: "Objeto"}, {eng: "Hammer", pt: "martelo", cat: "Objeto"}, {eng: "Screwdriver", pt: "chave de fenda", cat: "Objeto"}, {eng: "Microwave", pt: "micro-ondas", cat: "Objeto"}, {eng: "Refrigerator", pt: "geladeira", cat: "Objeto"},
+            // ANIMALS (50)
+            {eng: "Dog", pt: "cachorro", cat: "Animal"}, {eng: "Cat", pt: "gato", cat: "Animal"}, {eng: "Bird", pt: "pássaro", cat: "Animal"}, {eng: "Fish", pt: "peixe", cat: "Animal"}, {eng: "Horse", pt: "cavalo", cat: "Animal"}, {eng: "Cow", pt: "vaca", cat: "Animal"}, {eng: "Pig", pt: "porco", cat: "Animal"}, {eng: "Sheep", pt: "ovelha", cat: "Animal"}, {eng: "Goat", pt: "cabra", cat: "Animal"}, {eng: "Chicken", pt: "galinha", cat: "Animal"}, {eng: "Duck", pt: "pato", cat: "Animal"}, {eng: "Rabbit", pt: "coelho", cat: "Animal"}, {eng: "Mouse", pt: "rato", cat: "Animal"}, {eng: "Lion", pt: "leão", cat: "Animal"}, {eng: "Tiger", pt: "tigre", cat: "Animal"}, {eng: "Elephant", pt: "elefante", cat: "Animal"}, {eng: "Giraffe", pt: "girafa", cat: "Animal"}, {eng: "Zebra", pt: "zebra", cat: "Animal"}, {eng: "Bear", pt: "urso", cat: "Animal"}, {eng: "Wolf", pt: "lobo", cat: "Animal"}, {eng: "Fox", pt: "raposa", cat: "Animal"}, {eng: "Monkey", pt: "macaco", cat: "Animal"}, {eng: "Panda", pt: "panda", cat: "Animal"}, {eng: "Dolphin", pt: "golfinho", cat: "Animal"}, {eng: "Whale", pt: "baleia", cat: "Animal"}, {eng: "Shark", pt: "tubarão", cat: "Animal"}, {eng: "Snake", pt: "cobra", cat: "Animal"}, {eng: "Frog", pt: "sapo", cat: "Animal"}, {eng: "Turtle", pt: "tartaruga", cat: "Animal"}, {eng: "Crocodile", pt: "crocodilo", cat: "Animal"}, {eng: "Eagle", pt: "águia", cat: "Animal"}, {eng: "Owl", pt: "coruja", cat: "Animal"}, {eng: "Parrot", pt: "papagaio", cat: "Animal"}, {eng: "Penguin", pt: "pinguim", cat: "Animal"}, {eng: "Ant", pt: "formiga", cat: "Animal"}, {eng: "Bee", pt: "abelha", cat: "Animal"}, {eng: "Butterfly", pt: "borboleta", cat: "Animal"}, {eng: "Spider", pt: "aranha", cat: "Animal"}, {eng: "Mosquito", pt: "mosquito", cat: "Animal"}, {eng: "Fly", pt: "mosca", cat: "Animal"}, {eng: "Cheetah", pt: "guepardo", cat: "Animal"}, {eng: "Leopard", pt: "leopardo", cat: "Animal"}, {eng: "Hyena", pt: "hiena", cat: "Animal"}, {eng: "Bison", pt: "bisão", cat: "Animal"}, {eng: "Otter", pt: "lontra", cat: "Animal"}, {eng: "Walrus", pt: "morsa", cat: "Animal"}, {eng: "Chimpanzee", pt: "chimpanzé", cat: "Animal"}, {eng: "Sloth", pt: "preguiça", cat: "Animal"}, {eng: "Meerkat", pt: "suricato", cat: "Animal"}, {eng: "Jellyfish", pt: "água-viva", cat: "Animal"},
+            // SCHOOL (50)
+            {eng: "School", pt: "escola", cat: "Escola"}, {eng: "Classroom", pt: "sala de aula", cat: "Escola"}, {eng: "Teacher", pt: "professor(a)", cat: "Escola"}, {eng: "Student", pt: "aluno", cat: "Escola"}, {eng: "Desk", pt: "carteira", cat: "Escola"}, {eng: "Chair", pt: "cadeira", cat: "Escola"}, {eng: "Board", pt: "quadro", cat: "Escola"}, {eng: "Marker", pt: "marcador", cat: "Escola"}, {eng: "Eraser", pt: "apagador", cat: "Escola"}, {eng: "Book", pt: "livro", cat: "Escola"}, {eng: "Notebook", pt: "caderno", cat: "Escola"}, {eng: "Pencil", pt: "lápis", cat: "Escola"}, {eng: "Pen", pt: "caneta", cat: "Escola"}, {eng: "Ruler", pt: "régua", cat: "Escola"}, {eng: "Backpack", pt: "mochila", cat: "Escola"}, {eng: "Homework", pt: "lição de casa", cat: "Escola"}, {eng: "Test", pt: "teste", cat: "Escola"}, {eng: "Exam", pt: "prova", cat: "Escola"}, {eng: "Grade", pt: "nota", cat: "Escola"}, {eng: "Subject", pt: "matéria", cat: "Escola"}, {eng: "Math", pt: "matemática", cat: "Escola"}, {eng: "Science", pt: "ciência", cat: "Escola"}, {eng: "History", pt: "história", cat: "Escola"}, {eng: "Geography", pt: "geografia", cat: "Escola"}, {eng: "English", pt: "inglês", cat: "Escola"}, {eng: "Lesson", pt: "lição", cat: "Escola"}, {eng: "Class", pt: "aula", cat: "Escola"}, {eng: "Break", pt: "intervalo", cat: "Escola"}, {eng: "Library", pt: "biblioteca", cat: "Escola"}, {eng: "Computer", pt: "computador", cat: "Escola"}, {eng: "Project", pt: "projeto", cat: "Escola"}, {eng: "Assignment", pt: "tarefa", cat: "Escola"}, {eng: "Schedule", pt: "horário", cat: "Escola"}, {eng: "Uniform", pt: "uniforme", cat: "Escola"}, {eng: "Principal", pt: "diretor", cat: "Escola"}, {eng: "Blackboard", pt: "quadro negro", cat: "Escola"}, {eng: "Calculator", pt: "calculadora", cat: "Escola"}, {eng: "Dictionary", pt: "dicionário", cat: "Escola"}, {eng: "Map", pt: "mapa", cat: "Escola"}, {eng: "Paper", pt: "papel", cat: "Escola"}, {eng: "Curriculum", pt: "currículo", cat: "Escola"}, {eng: "Syllabus", pt: "programa", cat: "Escola"}, {eng: "Semester", pt: "semestre", cat: "Escola"}, {eng: "Lecture", pt: "palestra/aula", cat: "Escola"}, {eng: "Seminar", pt: "seminário", cat: "Escola"}, {eng: "Scholarship", pt: "bolsa de estudo", cat: "Escola"}, {eng: "Research", pt: "pesquisa", cat: "Escola"}, {eng: "Thesis", pt: "tese", cat: "Escola"}, {eng: "Faculty", pt: "corpo docente", cat: "Escola"}, {eng: "Graduation", pt: "formatura", cat: "Escola"},
+            // WORK (50)
+            {eng: "Work", pt: "trabalho", cat: "Trabalho"}, {eng: "Job", pt: "emprego", cat: "Trabalho"}, {eng: "Office", pt: "escritório", cat: "Trabalho"}, {eng: "Company", pt: "empresa", cat: "Trabalho"}, {eng: "Boss", pt: "chefe", cat: "Trabalho"}, {eng: "Manager", pt: "gerente", cat: "Trabalho"}, {eng: "Employee", pt: "funcionário", cat: "Trabalho"}, {eng: "Team", pt: "equipe", cat: "Trabalho"}, {eng: "Meeting", pt: "reunião", cat: "Trabalho"}, {eng: "Email", pt: "e-mail", cat: "Trabalho"}, {eng: "Call", pt: "ligação", cat: "Trabalho"}, {eng: "Report", pt: "relatório", cat: "Trabalho"}, {eng: "Project", pt: "projeto", cat: "Trabalho"}, {eng: "Deadline", pt: "prazo", cat: "Trabalho"}, {eng: "Salary", pt: "salário", cat: "Trabalho"}, {eng: "Client", pt: "cliente", cat: "Trabalho"}, {eng: "Customer", pt: "consumidor", cat: "Trabalho"}, {eng: "Task", pt: "tarefa", cat: "Trabalho"}, {eng: "Schedule", pt: "agenda", cat: "Trabalho"}, {eng: "Break", pt: "pausa", cat: "Trabalho"}, {eng: "Promotion", pt: "promoção", cat: "Trabalho"}, {eng: "Resume", pt: "currículo", cat: "Trabalho"}, {eng: "Interview", pt: "entrevista", cat: "Trabalho"}, {eng: "Training", pt: "treinamento", cat: "Trabalho"}, {eng: "Experience", pt: "experiência", cat: "Trabalho"}, {eng: "Skill", pt: "habilidade", cat: "Trabalho"}, {eng: "Feedback", pt: "feedback", cat: "Trabalho"}, {eng: "Goal", pt: "objetivo", cat: "Trabalho"}, {eng: "Plan", pt: "plano", cat: "Trabalho"}, {eng: "Budget", pt: "orçamento", cat: "Trabalho"}, {eng: "Profit", pt: "lucro", cat: "Trabalho"}, {eng: "Sales", pt: "vendas", cat: "Trabalho"}, {eng: "Marketing", pt: "marketing", cat: "Trabalho"}, {eng: "Presentation", pt: "apresentação", cat: "Trabalho"}, {eng: "Conference", pt: "conferência", cat: "Trabalho"}, {eng: "Travel", pt: "viagem", cat: "Trabalho"}, {eng: "Leadership", pt: "liderança", cat: "Trabalho"}, {eng: "Productivity", pt: "produtividade", cat: "Trabalho"}, {eng: "Efficiency", pt: "eficiência", cat: "Trabalho"}, {eng: "Innovation", pt: "inovação", cat: "Trabalho"}, {eng: "Negotiation", pt: "negociação", cat: "Trabalho"}, {eng: "Networking", pt: "networking", cat: "Trabalho"}, {eng: "Recruitment", pt: "recrutamento", cat: "Trabalho"}, {eng: "Accountability", pt: "responsabilidade", cat: "Trabalho"}, {eng: "Delegation", pt: "delegação", cat: "Trabalho"}, {eng: "Workflow", pt: "fluxo de trabalho", cat: "Trabalho"}, {eng: "Strategy", pt: "estratégia", cat: "Trabalho"}, {eng: "Investment", pt: "investimento", cat: "Trabalho"}, {eng: "Stakeholder", pt: "parte interessada", cat: "Trabalho"}, {eng: "Compliance", pt: "conformidade", cat: "Trabalho"}
+        ];
+
+        let score = 0, highscore = 0, lives = 3, timeLeft = 100, timerInterval;
+        let pool = [], currentWord = {}, correctBtnIndex = 0;
+
+        function initGame() {
+            const niche = document.getElementById('nicheSelect').value;
+            let filtered = niche === 'all' ? [...allWords] : allWords.filter(w => w.cat === niche);
+            pool = filtered.sort(() => Math.random() - 0.5);
+            nextQuestion();
+        }
+
+        function speak(text) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-GB'; 
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function nextQuestion() {
+            if (pool.length === 0) {
+                alert("CONGRATULATIONS! ALL WORDS COMPLETED.");
+                return initGame();
+            }
+
+            document.getElementById('gameCard').classList.remove('animate-shake');
+            currentWord = pool.pop();
+            
+            let wrong;
+            do { wrong = allWords[Math.floor(Math.random() * allWords.length)]; } while (wrong.pt === currentWord.pt);
+
+            correctBtnIndex = Math.floor(Math.random() * 2);
+            document.getElementById('targetWord').innerText = currentWord.eng;
+            document.getElementById('categoryLabel').innerText = currentWord.cat;
+            document.getElementById(`opt${correctBtnIndex}`).innerText = currentWord.pt;
+            document.getElementById(`opt${1 - correctBtnIndex}`).innerText = wrong.pt;
+            
+            speak(currentWord.eng);
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 100;
+            timerInterval = setInterval(() => {
+                timeLeft -= 1.0; 
+                document.getElementById('timerBar').style.width = timeLeft + "%";
+                if (timeLeft <= 0) { clearInterval(timerInterval); handleWrong(); }
+            }, 100);
+        }
+
+        function handleChoice(idx) {
+            clearInterval(timerInterval);
+            if (idx === correctBtnIndex) {
+                score += 10;
+                if (score > highscore) highscore = score;
+                updateUI();
+                nextQuestion();
+            } else { handleWrong(); }
+        }
+
+        function handleWrong() {
+            lives--;
+            document.getElementById('gameCard').classList.add('animate-shake');
+            updateUI();
+            if (lives <= 0) {
+                document.getElementById('finalScore').innerText = score;
+                document.getElementById('gameOverModal').classList.remove('hidden');
+                document.getElementById('gameOverModal').classList.add('flex');
+            } else { setTimeout(nextQuestion, 500); }
+        }
+
+        function updateUI() {
+            document.getElementById('score').innerText = score;
+            document.getElementById('highscore').innerText = highscore;
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(`heart${i}`).style.opacity = i <= lives ? "1" : "0.1";
+            }
+        }
+
+        function resetGame() {
+            score = 0; lives = 3;
+            document.getElementById('gameOverModal').classList.add('hidden');
+            updateUI();
+            initGame();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>
